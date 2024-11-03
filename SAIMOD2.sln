@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAIMOD2", "SAIMOD2\SAIMOD2.csproj", "{1CF12421-2480-4E9F-B489-E0686AC2EFC3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CF12421-2480-4E9F-B489-E0686AC2EFC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CF12421-2480-4E9F-B489-E0686AC2EFC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CF12421-2480-4E9F-B489-E0686AC2EFC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CF12421-2480-4E9F-B489-E0686AC2EFC3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

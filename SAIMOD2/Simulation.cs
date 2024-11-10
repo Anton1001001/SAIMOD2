@@ -3,7 +3,7 @@ public class Simulation
 {
     private List<Event?> _events = new();
     private float _modelTime;
-    private const float TimeEndOfSimulation = 10000f; // Time end of simulation
+    private const float TimeEndOfSimulation = 20000f; // Time end of simulation
 
     private int _countType1; // Counter for type 1 parts
     private int _totalPartsType1;
@@ -16,7 +16,7 @@ public class Simulation
     private int _totalCompletedBatches;
     private float _totalProcessingTime; // Total processing time for parts
     private int _totalPartsProcessed; // Total number of parts processed
-    private const int M1 = 3; // Batch size for type 1
+    private const int M1 = 10; // Batch size for type 1
     private const int M2 = 3; // Batch size for type 2
 
     private const float MeanTransportTimeToMachine = 5f; // Transport time to machine
@@ -25,18 +25,26 @@ public class Simulation
     private const float MeanTransportTimeToExit = 10f; // Transport time to exit conveyor
     private const float VarianceTransportTimeToExit = 2f;
     
-    private const float MeanProcessing = 30f;
+    private const float MeanProcessing = 15f;
     private const float VarianceProcessing = 5f;
 
     private const float MeanExponential = 20f;
     
     private const float DetailProbability = 0.7f;
+
+    public static List<float> AvgMachine1List = new();
+
+    private float _dt;
+    private float _avgDetailsMachine1;
+    private float _avgDetailsMachine2;
     
     Event? _currentEvent;
 
     public void Run()
     {
+        
         var time = RandomGenerator.GetExponentialRandom(MeanExponential);
+        
         ScheduleEvent(time, EventType.DetailArrival); // Schedule first part arrival
 
         while (_events.Any() && _modelTime < TimeEndOfSimulation)
@@ -83,6 +91,8 @@ public class Simulation
             }
             LogEvent(_currentEvent); // Log the current event
         }
+        
+        AvgMachine1List.Add(_avgDetailsMachine1/ TimeEndOfSimulation);
 
         Console.WriteLine("Simulation finished.");
         Console.WriteLine($"Total parts processed: {_totalPartsProcessed}");
@@ -91,7 +101,8 @@ public class Simulation
         Console.WriteLine($"Total parts type 2 processed: {_totalPartsType2} ({_totalPartsType2 / (float)_totalPartsProcessed * 100}%)");
         Console.WriteLine($"Average batch processing time: {(_totalCompletedBatches > 0 ? _totalProcessingTime / _totalCompletedBatches : 0)} seconds");
         Console.WriteLine($"Average part processing time: {(_totalPartsProcessed > 0 ? _totalProcessingTime / _totalPartsProcessed : 0)} seconds");
-
+        Console.WriteLine($"Avg details on machine1 {_avgDetailsMachine1 / TimeEndOfSimulation}");
+        Console.WriteLine($"Avg details on machine2 {_avgDetailsMachine2 / TimeEndOfSimulation}");
     }
 
     private void LogEvent(Event? currentEvent)
@@ -103,6 +114,8 @@ public class Simulation
         Console.WriteLine($"   Type 1 count: {_countType1}");
         Console.WriteLine($"   Type 2 count: {_countType2}");
         Console.WriteLine($"   Completed batches: {_completedBatches}");
+
+        
         Console.WriteLine($"   Total parts processed: {_totalPartsProcessed}");
         Console.WriteLine($"   Total processing time: {_totalProcessingTime:F2}");
     }
@@ -130,12 +143,19 @@ public class Simulation
             {
                 ScheduleEvent(_modelTime, EventType.CompleteBatchType2);
                 _countType2 -= M2;
-                Console.WriteLine($"[{_modelTime:F2}] Batch of Type 2 is ready for processing.");
+               Console.WriteLine($"[{_modelTime:F2}] Batch of Type 2 is ready for processing.");
             }
         }
 
+        
+        _dt = RandomGenerator.GetExponentialRandom(MeanExponential);
+
+        _avgDetailsMachine1 += _countType1 * _dt;
+        _avgDetailsMachine2 += _countType2 * _dt;
+        
+        
         // Schedule next detail arrival
-        ScheduleEvent(_modelTime + RandomGenerator.GetExponentialRandom(MeanExponential), EventType.DetailArrival);
+        ScheduleEvent(_modelTime + _dt, EventType.DetailArrival);
     }
 
     private void HandleCompleteBatch(int type)
